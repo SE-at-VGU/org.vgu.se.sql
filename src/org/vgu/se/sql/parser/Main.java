@@ -20,8 +20,6 @@ package org.vgu.se.sql.parser;
 
 import java.io.IOException;
 
-import org.vgu.se.sql.EStatement;
-
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
@@ -32,7 +30,7 @@ public class Main {
         throws IOException, JSQLParserException {
         Statement stm = CCJSqlParserUtil.parseStatements("SELECT * FROM Car")
             .getStatements().get(0);
-        EStatement estm = SQLParser.transform(stm);
+        sql.Statement estm = SQLParser.transform(stm);
 //        SQLParser.saveEStatement("test.xmi", estm);
         System.out.println(SQLParser.outputEStatementAsXMI(estm));
     }

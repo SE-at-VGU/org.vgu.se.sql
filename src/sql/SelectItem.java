@@ -1,0 +1,18 @@
+/**
+ */
+package sql;
+
+import org.eclipse.emf.ecore.EObject;
+
+/**
+ * <!-- begin-user-doc -->
+ * A representation of the model object '<em><b>Select Item</b></em>'.
+ * <!-- end-user-doc -->
+ *
+ *
+ * @see sql.SqlPackage#getSelectItem()
+ * @model interface="true" abstract="true"
+ * @generated
+ */
+public interface SelectItem extends EObject {
+} // SelectItem

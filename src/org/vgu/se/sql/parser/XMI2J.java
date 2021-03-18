@@ -23,42 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.vgu.se.sql.EAlias;
-import org.vgu.se.sql.EAllColumns;
-import org.vgu.se.sql.EAndExpression;
-import org.vgu.se.sql.EBinaryExpression;
-import org.vgu.se.sql.ECaseExpression;
-import org.vgu.se.sql.EColumn;
-import org.vgu.se.sql.EComparisonOperator;
-import org.vgu.se.sql.EDistinct;
-import org.vgu.se.sql.EEqualsTo;
-import org.vgu.se.sql.EExpression;
-import org.vgu.se.sql.EExpressionList;
-import org.vgu.se.sql.EFromItem;
-import org.vgu.se.sql.EFunction;
-import org.vgu.se.sql.EGreaterThan;
-import org.vgu.se.sql.EGreaterThanEquals;
-import org.vgu.se.sql.EGroupByElement;
-import org.vgu.se.sql.EIsNullExpression;
-import org.vgu.se.sql.EJoin;
-import org.vgu.se.sql.ELongValue;
-import org.vgu.se.sql.EMinorThan;
-import org.vgu.se.sql.EMinorThanEquals;
-import org.vgu.se.sql.ENotEqualsTo;
-import org.vgu.se.sql.ENullValue;
-import org.vgu.se.sql.EOrExpression;
-import org.vgu.se.sql.EPlainSelect;
-import org.vgu.se.sql.ESelect;
-import org.vgu.se.sql.ESelectBody;
-import org.vgu.se.sql.ESelectExpressionItem;
-import org.vgu.se.sql.ESelectItem;
-import org.vgu.se.sql.EStatement;
-import org.vgu.se.sql.EStringValue;
-import org.vgu.se.sql.ESubSelect;
-import org.vgu.se.sql.ETable;
-import org.vgu.se.sql.EWhenClause;
-import org.vgu.se.sql.SqlFactory;
-
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.CaseExpression;
@@ -93,30 +57,31 @@ import net.sf.jsqlparser.statement.select.SelectBody;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.statement.select.SubSelect;
+import sql.SqlFactory;
 
 public class XMI2J {
     private static SqlFactory factory = SqlFactory.eINSTANCE;
     
-    private static ESelect transformSelect(Select select) {
+    private static sql.Select transformSelect(Select select) {
         if (select == null)
             return null;
-        ESelect selectXMI = factory.createESelect();
+        sql.Select selectXMI = factory.createSelect();
         selectXMI.setSelectBody(transformSelectBody(select.getSelectBody()));
         return selectXMI;
     }
 
-    private static ESelectBody transformSelectBody(SelectBody selectBody) {
+    private static sql.SelectBody transformSelectBody(SelectBody selectBody) {
         if (selectBody == null)
             return null;
-        EPlainSelect plainSelectXMI = transformPlainSelect(
+        sql.PlainSelect plainSelectXMI = transformPlainSelect(
             (PlainSelect) selectBody);
         return plainSelectXMI;
     }
 
-    private static EPlainSelect transformPlainSelect(PlainSelect plainSelect) {
+    private static sql.PlainSelect transformPlainSelect(PlainSelect plainSelect) {
         if (plainSelect == null)
             return null;
-        EPlainSelect plainSelectXMI = factory.createEPlainSelect();
+        sql.PlainSelect plainSelectXMI = factory.createPlainSelect();
         plainSelectXMI
             .setDistinct(transformDistinct(plainSelect.getDistinct()));
         plainSelectXMI.getSelectItems()
@@ -132,32 +97,32 @@ public class XMI2J {
         return plainSelectXMI;
     }
 
-    private static EGroupByElement transformGroupByElement(
+    private static sql.GroupByElement transformGroupByElement(
         GroupByElement groupBy) {
         if (groupBy == null)
             return null;
-        EGroupByElement groupByElementXMI = factory.createEGroupByElement();
+        sql.GroupByElement groupByElementXMI = factory.createGroupByElement();
         groupByElementXMI.getGroupByExpressions()
             .addAll(transformExpressions(groupBy.getGroupByExpressions()));
         return groupByElementXMI;
     }
 
-    private static Collection<? extends EJoin> transformJoins(
+    private static Collection<? extends sql.Join> transformJoins(
         List<Join> joins) {
-        List<EJoin> joinsXMI = new ArrayList<EJoin>();
+        List<sql.Join> joinsXMI = new ArrayList<sql.Join>();
         if(joins != null) {
             for (Join join : joins) {
-                EJoin joinXMI = transformJoin(join);
+            	sql.Join joinXMI = transformJoin(join);
                 joinsXMI.add(joinXMI);
             }
         }
         return joinsXMI;
     }
 
-    private static EJoin transformJoin(Join join) {
+    private static sql.Join transformJoin(Join join) {
         if (join == null)
             return null;
-        EJoin joinXMI = factory.createEJoin();
+        sql.Join joinXMI = factory.createJoin();
         joinXMI.setOuter(join.isOuter());
         joinXMI.setRight(join.isRight());
         joinXMI.setLeft(join.isLeft());
@@ -172,7 +137,7 @@ public class XMI2J {
         return joinXMI;
     }
 
-    private static EFromItem transformFromItem(FromItem fromItem) {
+    private static sql.FromItem transformFromItem(FromItem fromItem) {
         if (fromItem == null)
             return null;
         if (fromItem instanceof Table) {
@@ -182,19 +147,19 @@ public class XMI2J {
         }
     }
 
-    private static Collection<? extends ESelectItem> transformSelectItems(
+    private static Collection<? extends sql.SelectItem> transformSelectItems(
         List<SelectItem> selectItems) {
-        List<ESelectItem> selectItemsXMI = new ArrayList<ESelectItem>();
+        List<sql.SelectItem> selectItemsXMI = new ArrayList<sql.SelectItem>();
         if(selectItems != null) { 
             for (SelectItem selectItem : selectItems) {
-                ESelectItem selectItemXMI = transformSelectItem(selectItem);
+            	sql.SelectItem selectItemXMI = transformSelectItem(selectItem);
                 selectItemsXMI.add(selectItemXMI);
             }
         }
         return selectItemsXMI;
     }
 
-    private static ESelectItem transformSelectItem(SelectItem selectItem) {
+    private static sql.SelectItem transformSelectItem(SelectItem selectItem) {
         if (selectItem == null)
             return null;
         if (selectItem instanceof AllColumns) {
@@ -205,18 +170,18 @@ public class XMI2J {
         }
     }
 
-    private static EAllColumns transformAllColumns(AllColumns allColumns) {
+    private static sql.AllColumns transformAllColumns(AllColumns allColumns) {
         if (allColumns == null)
             return null;
-        return factory.createEAllColumns();
+        return factory.createAllColumns();
     }
 
-    private static ESelectItem transformSelectExpressionItem(
+    private static sql.SelectItem transformSelectExpressionItem(
         SelectExpressionItem selectExpressionItem) {
         if (selectExpressionItem == null)
             return null;
-        ESelectExpressionItem selectExpressionItemXMI = factory
-            .createESelectExpressionItem();
+        sql.SelectExpressionItem selectExpressionItemXMI = factory
+            .createSelectExpressionItem();
         selectExpressionItemXMI
             .setAlias(transformAlias(selectExpressionItem.getAlias()));
         selectExpressionItemXMI.setExpression(
@@ -224,7 +189,7 @@ public class XMI2J {
         return selectExpressionItemXMI;
     }
 
-    private static EExpression transformExpression(Expression expression) {
+    private static sql.Expression transformExpression(Expression expression) {
         if (expression == null)
             return null;
         if (expression instanceof StringValue) {
@@ -250,11 +215,11 @@ public class XMI2J {
         }
     }
 
-    private static ECaseExpression transformCaseExpression(
+    private static sql.CaseExpression transformCaseExpression(
         CaseExpression caseExpression) {
         if (caseExpression == null)
             return null;
-        ECaseExpression caseExpressionXMI = factory.createECaseExpression();
+        sql.CaseExpression caseExpressionXMI = factory.createCaseExpression();
         caseExpressionXMI.setSwitchExpression(
             transformExpression(caseExpression.getSwitchExpression()));
         caseExpressionXMI.setElseExpression(
@@ -264,22 +229,22 @@ public class XMI2J {
         return caseExpressionXMI;
     }
 
-    private static Collection<? extends EWhenClause> transformWhenClauses(
+    private static Collection<? extends sql.WhenClause> transformWhenClauses(
         List<WhenClause> whenClauses) {
-        List<EWhenClause> whenClausesXMI = new ArrayList<EWhenClause>();
+        List<sql.WhenClause> whenClausesXMI = new ArrayList<sql.WhenClause>();
         if(whenClauses != null) {
             for (WhenClause whenClause : whenClauses) {
-                EWhenClause whenClauseXMI = transformWhenClause(whenClause);
+            	sql.WhenClause whenClauseXMI = transformWhenClause(whenClause);
                 whenClausesXMI.add(whenClauseXMI);
             }
         }
         return whenClausesXMI;
     }
 
-    private static EWhenClause transformWhenClause(WhenClause whenClause) {
+    private static sql.WhenClause transformWhenClause(WhenClause whenClause) {
         if (whenClause == null)
             return null;
-        EWhenClause whenClauseXMI = factory.createEWhenClause();
+        sql.WhenClause whenClauseXMI = factory.createWhenClause();
         whenClauseXMI.setWhenExpression(
             transformExpression(whenClause.getWhenExpression()));
         whenClauseXMI.setThenExpression(
@@ -287,28 +252,28 @@ public class XMI2J {
         return whenClauseXMI;
     }
 
-    private static EColumn transformColumn(Column column) {
+    private static sql.Column transformColumn(Column column) {
         if (column == null)
             return null;
-        EColumn columnXMI = factory.createEColumn();
+        sql.Column columnXMI = factory.createColumn();
         columnXMI.setColumnName(column.getColumnName());
         columnXMI.setTable(transformTable(column.getTable()));
         return columnXMI;
     }
 
-    private static ETable transformTable(Table table) {
+    private static sql.Table transformTable(Table table) {
         if (table == null)
             return null;
-        ETable tableXMI = factory.createETable();
+        sql.Table tableXMI = factory.createTable();
         tableXMI.setAlias(transformAlias(table.getAlias()));
         tableXMI.setName(table.getName());
         return tableXMI;
     }
 
-    private static EFunction transformFunction(Function function) {
+    private static sql.Function transformFunction(Function function) {
         if (function == null)
             return null;
-        EFunction functionXMI = factory.createEFunction();
+        sql.Function functionXMI = factory.createFunction();
         functionXMI.setAllColumns(function.isAllColumns());
         functionXMI.setDistinct(function.isDistinct());
         functionXMI.setName(function.getName());
@@ -317,57 +282,57 @@ public class XMI2J {
         return functionXMI;
     }
 
-    private static EExpressionList transformExpressionList(
+    private static sql.ExpressionList transformExpressionList(
         ExpressionList expressionList) {
         if (expressionList == null)
             return null;
-        EExpressionList expressionListXMI = factory.createEExpressionList();
+        sql.ExpressionList expressionListXMI = factory.createExpressionList();
         expressionListXMI.getExpressions()
             .addAll(transformExpressions(expressionList.getExpressions()));
         return expressionListXMI;
     }
 
-    private static Collection<? extends EExpression> transformExpressions(
+    private static Collection<? extends sql.Expression> transformExpressions(
         List<Expression> expressions) {
-        List<EExpression> expressionsXMI = new ArrayList<EExpression>();
+        List<sql.Expression> expressionsXMI = new ArrayList<sql.Expression>();
         if(expressions != null) {    
             for (Expression expression : expressions) {
-                EExpression expressionXMI = transformExpression(expression);
+            	sql.Expression expressionXMI = transformExpression(expression);
                 expressionsXMI.add(expressionXMI);
             }
         }
         return expressionsXMI;
     }
 
-    private static EIsNullExpression transformIsNullExpression(
+    private static sql.IsNullExpression transformIsNullExpression(
         IsNullExpression isNullExpression) {
         if (isNullExpression == null)
             return null;
-        EIsNullExpression isNullExpressionXMI = factory
-            .createEIsNullExpression();
+        sql.IsNullExpression isNullExpressionXMI = factory
+            .createIsNullExpression();
         isNullExpressionXMI.setLeftExpression(
             transformExpression(isNullExpression.getLeftExpression()));
         isNullExpressionXMI.setNot(isNullExpression.isNot());
         return isNullExpressionXMI;
     }
 
-    private static ENullValue transformNullValue(NullValue nullValue) {
+    private static sql.NullValue transformNullValue(NullValue nullValue) {
         if (nullValue == null)
             return null;
-        return factory.createENullValue();
+        return factory.createNullValue();
     }
 
-    private static ESubSelect transformSubSelect(SubSelect subSelect) {
+    private static sql.SubSelect transformSubSelect(SubSelect subSelect) {
         if (subSelect == null)
             return null;
-        ESubSelect subSelectXMI = factory.createESubSelect();
+        sql.SubSelect subSelectXMI = factory.createSubSelect();
         subSelectXMI.setAlias(transformAlias(subSelect.getAlias()));
         subSelectXMI
             .setSelectBody(transformSelectBody(subSelect.getSelectBody()));
         return subSelectXMI;
     }
 
-    private static EComparisonOperator transformComparisonOperator(
+    private static sql.ComparisonOperator transformComparisonOperator(
         ComparisonOperator comparisonOperator) {
         if (comparisonOperator == null)
             return null;
@@ -388,10 +353,10 @@ public class XMI2J {
         }
     }
 
-    private static ENotEqualsTo transformNotEqualsTo(NotEqualsTo notEqualsTo) {
+    private static sql.NotEqualsTo transformNotEqualsTo(NotEqualsTo notEqualsTo) {
         if (notEqualsTo == null)
             return null;
-        ENotEqualsTo notEqualsToXMI = factory.createENotEqualsTo();
+        sql.NotEqualsTo notEqualsToXMI = factory.createNotEqualsTo();
         notEqualsToXMI.setLeftExpression(
             transformExpression(notEqualsTo.getLeftExpression()));
         notEqualsToXMI.setRightExpression(
@@ -399,11 +364,11 @@ public class XMI2J {
         return notEqualsToXMI;
     }
 
-    private static EMinorThanEquals transformMinorThanEquals(
+    private static sql.MinorThanEquals transformMinorThanEquals(
         MinorThanEquals minorThanEquals) {
         if (minorThanEquals == null)
             return null;
-        EMinorThanEquals minorThanEqualsXMI = factory.createEMinorThanEquals();
+        sql.MinorThanEquals minorThanEqualsXMI = factory.createMinorThanEquals();
         minorThanEqualsXMI.setLeftExpression(
             transformExpression(minorThanEquals.getLeftExpression()));
         minorThanEqualsXMI.setRightExpression(
@@ -411,10 +376,10 @@ public class XMI2J {
         return minorThanEqualsXMI;
     }
 
-    private static EMinorThan transformMinorThan(MinorThan minorThan) {
+    private static sql.MinorThan transformMinorThan(MinorThan minorThan) {
         if (minorThan == null)
             return null;
-        EMinorThan minorThanXMI = factory.createEMinorThan();
+        sql.MinorThan minorThanXMI = factory.createMinorThan();
         minorThanXMI.setLeftExpression(
             transformExpression(minorThan.getLeftExpression()));
         minorThanXMI.setRightExpression(
@@ -422,12 +387,12 @@ public class XMI2J {
         return minorThanXMI;
     }
 
-    private static EGreaterThanEquals transformGreateThanEquals(
+    private static sql.GreaterThanEquals transformGreateThanEquals(
         GreaterThanEquals greaterThanEquals) {
         if (greaterThanEquals == null)
             return null;
-        EGreaterThanEquals greaterThanEqualsXMI = factory
-            .createEGreaterThanEquals();
+        sql.GreaterThanEquals greaterThanEqualsXMI = factory
+            .createGreaterThanEquals();
         greaterThanEqualsXMI.setLeftExpression(
             transformExpression(greaterThanEquals.getLeftExpression()));
         greaterThanEqualsXMI.setRightExpression(
@@ -435,10 +400,10 @@ public class XMI2J {
         return greaterThanEqualsXMI;
     }
 
-    private static EGreaterThan transformGreaterThan(GreaterThan greaterThan) {
+    private static sql.GreaterThan transformGreaterThan(GreaterThan greaterThan) {
         if (greaterThan == null)
             return null;
-        EGreaterThan greaterThanXMI = factory.createEGreaterThan();
+        sql.GreaterThan greaterThanXMI = factory.createGreaterThan();
         greaterThanXMI.setLeftExpression(
             transformExpression(greaterThan.getLeftExpression()));
         greaterThanXMI.setRightExpression(
@@ -446,10 +411,10 @@ public class XMI2J {
         return greaterThanXMI;
     }
 
-    private static EEqualsTo transformEqualsTo(EqualsTo equalsTo) {
+    private static sql.EqualsTo transformEqualsTo(EqualsTo equalsTo) {
         if (equalsTo == null)
             return null;
-        EEqualsTo equalsToXMI = factory.createEEqualsTo();
+        sql.EqualsTo equalsToXMI = factory.createEqualsTo();
         equalsToXMI.setLeftExpression(
             transformExpression(equalsTo.getLeftExpression()));
         equalsToXMI.setRightExpression(
@@ -457,7 +422,7 @@ public class XMI2J {
         return equalsToXMI;
     }
 
-    private static EBinaryExpression transformBinaryExpression(
+    private static sql.BinaryExpression transformBinaryExpression(
         BinaryExpression binaryExpression) {
         if (binaryExpression == null)
             return null;
@@ -471,11 +436,11 @@ public class XMI2J {
         }
     }
 
-    private static EOrExpression transformOrExpression(
+    private static sql.OrExpression transformOrExpression(
         OrExpression orExpression) {
         if (orExpression == null)
             return null;
-        EOrExpression orExpressionXMI = factory.createEOrExpression();
+        sql.OrExpression orExpressionXMI = factory.createOrExpression();
         orExpressionXMI.setLeftExpression(
             transformExpression(orExpression.getLeftExpression()));
         orExpressionXMI.setRightExpression(
@@ -483,11 +448,11 @@ public class XMI2J {
         return orExpressionXMI;
     }
 
-    private static EAndExpression transformAndExpression(
+    private static sql.AndExpression transformAndExpression(
         AndExpression andExpression) {
         if (andExpression == null)
             return null;
-        EAndExpression andExpressionXMI = factory.createEAndExpression();
+        sql.AndExpression andExpressionXMI = factory.createAndExpression();
         andExpressionXMI.setLeftExpression(
             transformExpression(andExpression.getLeftExpression()));
         andExpressionXMI.setRightExpression(
@@ -495,44 +460,44 @@ public class XMI2J {
         return andExpressionXMI;
     }
 
-    private static EStringValue transformStringValue(StringValue stringValue) {
+    private static sql.StringValue transformStringValue(StringValue stringValue) {
         if (stringValue == null)
             return null;
-        EStringValue stringValueXMI = factory.createEStringValue();
+        sql.StringValue stringValueXMI = factory.createStringValue();
         stringValueXMI.setValue(stringValue.getValue());
         return stringValueXMI;
     }
 
-    private static ELongValue transformLongValue(LongValue longValue) {
+    private static sql.LongValue transformLongValue(LongValue longValue) {
         if (longValue == null)
             return null;
-        ELongValue longValueXMI = factory.createELongValue();
+        sql.LongValue longValueXMI = factory.createLongValue();
         longValueXMI.setValue(longValue.getValue());
         return longValueXMI;
     }
 
-    private static EAlias transformAlias(Alias alias) {
+    private static sql.Alias transformAlias(Alias alias) {
         if (alias == null)
             return null;
-        EAlias aliasXMI = factory.createEAlias();
+        sql.Alias aliasXMI = factory.createAlias();
         aliasXMI.setName(alias.getName());
         return aliasXMI;
     }
 
-    private static EDistinct transformDistinct(Distinct distinct) {
+    private static sql.Distinct transformDistinct(Distinct distinct) {
         if (distinct == null)
             return null;
-        EDistinct distinctXMI = factory.createEDistinct();
+        sql.Distinct distinctXMI = factory.createDistinct();
         distinctXMI.setUseUnique(distinct.isUseUnique());
         distinctXMI.getOnSelectItems()
             .addAll(transformSelectItems(distinct.getOnSelectItems()));
         return distinctXMI;
     }
 
-    public static EStatement transform(Statement statement) {
+    public static sql.Statement transform(Statement statement) {
         if (statement == null)
             return null;
-        ESelect selectXMI = transformSelect((Select) statement);
+        sql.Select selectXMI = transformSelect((Select) statement);
         return selectXMI;
     }
 }

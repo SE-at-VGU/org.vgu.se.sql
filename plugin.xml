@@ -10,8 +10,8 @@
       <!-- @generated sql -->
       <package
             uri="http://www.example.org/sql"
-            class="org.vgu.se.sql.SqlPackage"
-            genModel="model/sql.genmodel"/>
+            class="sql.SqlPackage"
+            genModel="metamodels/sql.genmodel"/>
    </extension>
 
 </plugin>

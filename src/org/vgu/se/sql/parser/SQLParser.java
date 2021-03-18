@@ -19,6 +19,7 @@ limitations under the License.
 package org.vgu.se.sql.parser;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,24 +34,23 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.vgu.se.sql.EStatement;
-import org.vgu.se.sql.SqlFactory;
-import org.vgu.se.sql.SqlPackage;
 
 import net.sf.jsqlparser.statement.Statement;
+import sql.SqlFactory;
+import sql.SqlPackage;
 
 public class SQLParser {
     private static SqlFactory factory = SqlFactory.eINSTANCE;
 
-    public static Statement transform(EStatement statementXMI) {
+    public static Statement transform(sql.Statement statementXMI) {
         return J2XMI.transform(statementXMI);
     }
 
-    public static EStatement transform(Statement statement) {
+    public static sql.Statement transform(Statement statement) {
         return XMI2J.transform(statement);
     }
 
-    public static void saveEStatement(String fileName, EStatement statement)
+    public static void saveEStatement(File file, sql.Statement statement)
         throws IOException {
         EcorePackage.eINSTANCE.eClass();
         Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
@@ -59,17 +59,18 @@ public class SQLParser {
         factory.eClass();
 
         ResourceSet resSet = new ResourceSetImpl();
-        Resource resource = resSet.createResource(URI.createFileURI(fileName));
+        Resource resource = resSet.createResource(URI.createFileURI(file.getAbsolutePath()));
         resource.getContents().add(statement);
         resource.save(Collections.EMPTY_MAP);
 
         return;
     }
 
-    public static String outputEStatementAsXMI(EStatement statement)
+    public static String outputEStatementAsXMI(sql.Statement statement)
         throws IOException {
         final String dirPath = System.getProperty("java.io.tmpdir");
-        saveEStatement(dirPath.concat("dummy.xmi"), statement);
+        File file = new File(dirPath.concat("dummy.xmi"));
+        saveEStatement(file, statement);
         InputStream is = new FileInputStream(dirPath.concat("dummy.xmi"));
         @SuppressWarnings("resource")
         BufferedReader buf = new BufferedReader(new InputStreamReader(is));
@@ -84,12 +85,25 @@ public class SQLParser {
         String fileAsString = sb.toString();
         return fileAsString;
     }
-
-    public static EStatement loadEStatement(String filePath)
+    
+    public static String outputEStatementAsString(sql.Statement statement)
+            throws IOException {
+            Statement sqlStm = transform(statement);
+            return sqlStm.toString();
+        }
+    
+    public static String outputEStatementAsString(File sqlXMIFile)
+            throws IOException {
+            sql.Statement sqlStm = loadEStatement(sqlXMIFile.getAbsolutePath());
+            return outputEStatementAsString(sqlStm);
+        }
+    
+    public static sql.Statement loadEStatement(String filePath)
         throws IOException {
         // Initialize the model
         factory.eClass();
-        SqlPackage sqlPackage = SqlPackage.eINSTANCE;
+        @SuppressWarnings("unused")
+		SqlPackage sqlPackage = SqlPackage.eINSTANCE;
 
         Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
         Map<String, Object> m = reg.getExtensionToFactoryMap();
@@ -107,7 +121,7 @@ public class SQLParser {
 
         // Get the first model element and cast it to the right type, in my
         // example everything is hierarchical included in this first node
-        EStatement statement = (EStatement) resource.getContents().get(0);
+        sql.Statement statement = (sql.Statement) resource.getContents().get(0);
 
         return statement;
     }

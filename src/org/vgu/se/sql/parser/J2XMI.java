@@ -21,41 +21,6 @@ package org.vgu.se.sql.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.vgu.se.sql.EAlias;
-import org.vgu.se.sql.EAllColumns;
-import org.vgu.se.sql.EAndExpression;
-import org.vgu.se.sql.EBinaryExpression;
-import org.vgu.se.sql.ECaseExpression;
-import org.vgu.se.sql.EColumn;
-import org.vgu.se.sql.EComparisonOperator;
-import org.vgu.se.sql.EDistinct;
-import org.vgu.se.sql.EEqualsTo;
-import org.vgu.se.sql.EExpression;
-import org.vgu.se.sql.EExpressionList;
-import org.vgu.se.sql.EFromItem;
-import org.vgu.se.sql.EFunction;
-import org.vgu.se.sql.EGreaterThan;
-import org.vgu.se.sql.EGreaterThanEquals;
-import org.vgu.se.sql.EGroupByElement;
-import org.vgu.se.sql.EIsNullExpression;
-import org.vgu.se.sql.EJoin;
-import org.vgu.se.sql.ELongValue;
-import org.vgu.se.sql.EMinorThan;
-import org.vgu.se.sql.EMinorThanEquals;
-import org.vgu.se.sql.ENotEqualsTo;
-import org.vgu.se.sql.ENullValue;
-import org.vgu.se.sql.EOrExpression;
-import org.vgu.se.sql.EPlainSelect;
-import org.vgu.se.sql.ESelect;
-import org.vgu.se.sql.ESelectBody;
-import org.vgu.se.sql.ESelectExpressionItem;
-import org.vgu.se.sql.ESelectItem;
-import org.vgu.se.sql.EStatement;
-import org.vgu.se.sql.EStringValue;
-import org.vgu.se.sql.ESubSelect;
-import org.vgu.se.sql.ETable;
-import org.vgu.se.sql.EWhenClause;
-
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.CaseExpression;
@@ -78,7 +43,6 @@ import net.sf.jsqlparser.expression.operators.relational.MinorThanEquals;
 import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
-import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.Distinct;
 import net.sf.jsqlparser.statement.select.FromItem;
@@ -93,14 +57,14 @@ import net.sf.jsqlparser.statement.select.SubSelect;
 
 public class J2XMI {
 
-    public static Statement transform(EStatement statementXMI) {
+    public static net.sf.jsqlparser.statement.Statement transform(sql.Statement statementXMI) {
         if (statementXMI == null)
             return null;
-        Select select = transformSelect((ESelect) statementXMI);
+        Select select = transformSelect((sql.Select) statementXMI);
         return select;
     }
 
-    private static Select transformSelect(ESelect selectXMI) {
+    private static Select transformSelect(sql.Select selectXMI) {
         if (selectXMI == null)
             return null;
         Select select = new Select();
@@ -108,16 +72,16 @@ public class J2XMI {
         return select;
     }
 
-    private static SelectBody transformSelectBody(ESelectBody selectBodyXMI) {
+    private static SelectBody transformSelectBody(sql.SelectBody selectBodyXMI) {
         if (selectBodyXMI == null)
             return null;
         PlainSelect plainSelect = transformPlainSelect(
-            (EPlainSelect) selectBodyXMI);
+            (sql.PlainSelect) selectBodyXMI);
         return plainSelect;
     }
 
     private static PlainSelect transformPlainSelect(
-        EPlainSelect plainSelectXMI) {
+    		sql.PlainSelect plainSelectXMI) {
         if (plainSelectXMI == null)
             return null;
         PlainSelect plainSelect = new PlainSelect();
@@ -135,7 +99,7 @@ public class J2XMI {
     }
 
     private static GroupByElement transformGroupByElement(
-        EGroupByElement groupByXMI) {
+    		sql.GroupByElement groupByXMI) {
         if (groupByXMI == null)
             return null;
         GroupByElement groupByElement = new GroupByElement();
@@ -144,16 +108,16 @@ public class J2XMI {
     }
 
     private static List<Join> transformJoins(
-        List<EJoin> joinsXMI) {
+        List<sql.Join> joinsXMI) {
         List<Join> joins = new ArrayList<Join>();
-        for (EJoin joinXMI : joinsXMI) {
+        for (sql.Join joinXMI : joinsXMI) {
             Join join = transformJoin(joinXMI);
             joins.add(join);
         }
         return joins;
     }
 
-    private static Join transformJoin(EJoin joinXMI) {
+    private static Join transformJoin(sql.Join joinXMI) {
         if (joinXMI == null)
             return null;
         Join join = new Join();
@@ -171,45 +135,45 @@ public class J2XMI {
         return join;
     }
 
-    private static FromItem transformFromItem(EFromItem fromItemXMI) {
+    private static FromItem transformFromItem(sql.FromItem fromItemXMI) {
         if (fromItemXMI == null)
             return null;
-        if (fromItemXMI instanceof ETable) {
-            return transformTable((ETable) fromItemXMI);
+        if (fromItemXMI instanceof sql.Table) {
+            return transformTable((sql.Table) fromItemXMI);
         } else {
-            return transformSubSelect((ESubSelect) fromItemXMI);
+            return transformSubSelect((sql.SubSelect) fromItemXMI);
         }
     }
 
     private static List<SelectItem> transformSelectItems(
-        List<ESelectItem> selectItemsXMI) {
+        List<sql.SelectItem> selectItemsXMI) {
         List<SelectItem> selectItems = new ArrayList<SelectItem>();
-        for (ESelectItem selectItemXMI : selectItemsXMI) {
+        for (sql.SelectItem selectItemXMI : selectItemsXMI) {
             SelectItem selectItem = transformSelectItem(selectItemXMI);
             selectItems.add(selectItem);
         }
         return selectItems;
     }
 
-    private static SelectItem transformSelectItem(ESelectItem selectItemXMI) {
+    private static SelectItem transformSelectItem(sql.SelectItem selectItemXMI) {
         if (selectItemXMI == null)
             return null;
-        if (selectItemXMI instanceof EAllColumns) {
-            return transformAllColumns((EAllColumns) selectItemXMI);
+        if (selectItemXMI instanceof sql.AllColumns) {
+            return transformAllColumns((sql.AllColumns) selectItemXMI);
         } else {
             return transformSelectExpressionItem(
-                (ESelectExpressionItem) selectItemXMI);
+                (sql.SelectExpressionItem) selectItemXMI);
         }
     }
 
-    private static AllColumns transformAllColumns(EAllColumns allColumnsXMI) {
+    private static AllColumns transformAllColumns(sql.AllColumns allColumnsXMI) {
         if (allColumnsXMI == null)
             return null;
         return new AllColumns();
     }
 
     private static SelectItem transformSelectExpressionItem(
-        ESelectExpressionItem selectExpressionItemXMI) {
+    		sql.SelectExpressionItem selectExpressionItemXMI) {
         if (selectExpressionItemXMI == null)
             return null;
         SelectExpressionItem selectExpressionItem = new SelectExpressionItem();
@@ -220,34 +184,34 @@ public class J2XMI {
         return selectExpressionItem;
     }
 
-    private static Expression transformExpression(EExpression expressionXMI) {
+    private static Expression transformExpression(sql.Expression expressionXMI) {
         if (expressionXMI == null)
             return null;
-        if (expressionXMI instanceof EStringValue) {
-            return transformStringValue((EStringValue) expressionXMI);
-        } else if (expressionXMI instanceof ELongValue) {
-            return transformLongValue((ELongValue) expressionXMI);
-        } else if (expressionXMI instanceof EBinaryExpression) {
-            return transformBinaryExpression((EBinaryExpression) expressionXMI);
-        } else if (expressionXMI instanceof ESubSelect) {
-            return transformSubSelect((ESubSelect) expressionXMI);
-        } else if (expressionXMI instanceof ENullValue) {
-            return transformNullValue((ENullValue) expressionXMI);
-        } else if (expressionXMI instanceof EIsNullExpression) {
-            return transformIsNullExpression((EIsNullExpression) expressionXMI);
-        } else if (expressionXMI instanceof EFunction) {
-            return transformFunction((EFunction) expressionXMI);
-        } else if (expressionXMI instanceof EColumn) {
-            return transformColumn((EColumn) expressionXMI);
-        } else if (expressionXMI instanceof ECaseExpression) {
-            return transformCaseExpression((ECaseExpression) expressionXMI);
+        if (expressionXMI instanceof sql.StringValue) {
+            return transformStringValue((sql.StringValue) expressionXMI);
+        } else if (expressionXMI instanceof sql.LongValue) {
+            return transformLongValue((sql.LongValue) expressionXMI);
+        } else if (expressionXMI instanceof sql.BinaryExpression) {
+            return transformBinaryExpression((sql.BinaryExpression) expressionXMI);
+        } else if (expressionXMI instanceof sql.SubSelect) {
+            return transformSubSelect((sql.SubSelect) expressionXMI);
+        } else if (expressionXMI instanceof sql.NullValue) {
+            return transformNullValue((sql.NullValue) expressionXMI);
+        } else if (expressionXMI instanceof sql.IsNullExpression) {
+            return transformIsNullExpression((sql.IsNullExpression) expressionXMI);
+        } else if (expressionXMI instanceof sql.Function) {
+            return transformFunction((sql.Function) expressionXMI);
+        } else if (expressionXMI instanceof sql.Column) {
+            return transformColumn((sql.Column) expressionXMI);
+        } else if (expressionXMI instanceof sql.CaseExpression) {
+            return transformCaseExpression((sql.CaseExpression) expressionXMI);
         } else {
-            return transformWhenClause((EWhenClause) expressionXMI);
+            return transformWhenClause((sql.WhenClause) expressionXMI);
         }
     }
 
     private static CaseExpression transformCaseExpression(
-        ECaseExpression caseExpressionXMI) {
+    		sql.CaseExpression caseExpressionXMI) {
         if (caseExpressionXMI == null)
             return null;
         CaseExpression caseExpression = new CaseExpression();
@@ -260,16 +224,16 @@ public class J2XMI {
     }
 
     private static List<WhenClause> transformWhenClauses(
-        List<EWhenClause> whenClausesXMI) {
+        List<sql.WhenClause> whenClausesXMI) {
         List<WhenClause> whenClauses = new ArrayList<WhenClause>();
-        for (EWhenClause whenClauseXMI : whenClausesXMI) {
+        for (sql.WhenClause whenClauseXMI : whenClausesXMI) {
             WhenClause whenClause = transformWhenClause(whenClauseXMI);
             whenClauses.add(whenClause);
         }
         return whenClauses;
     }
 
-    private static WhenClause transformWhenClause(EWhenClause whenClauseXMI) {
+    private static WhenClause transformWhenClause(sql.WhenClause whenClauseXMI) {
         if (whenClauseXMI == null)
             return null;
         WhenClause whenClause = new WhenClause();
@@ -280,7 +244,7 @@ public class J2XMI {
         return whenClause;
     }
 
-    private static Column transformColumn(EColumn columnXMI) {
+    private static Column transformColumn(sql.Column columnXMI) {
         if (columnXMI == null)
             return null;
         Column column = new Column();
@@ -289,7 +253,7 @@ public class J2XMI {
         return column;
     }
 
-    private static Table transformTable(ETable tableXMI) {
+    private static Table transformTable(sql.Table tableXMI) {
         if (tableXMI == null)
             return null;
         Table table = new Table();
@@ -298,7 +262,7 @@ public class J2XMI {
         return table;
     }
 
-    private static Function transformFunction(EFunction functionXMI) {
+    private static Function transformFunction(sql.Function functionXMI) {
         if (functionXMI == null)
             return null;
         Function function = new Function();
@@ -311,7 +275,7 @@ public class J2XMI {
     }
 
     private static ExpressionList transformExpressionList(
-        EExpressionList expressionListXMI) {
+    		sql.ExpressionList expressionListXMI) {
         if (expressionListXMI == null)
             return null;
         ExpressionList expressionList = new ExpressionList();
@@ -320,9 +284,9 @@ public class J2XMI {
     }
 
     private static List<Expression> transformExpressions(
-        List<EExpression> expressionsXMI) {
+        List<sql.Expression> expressionsXMI) {
         List<Expression> expressions = new ArrayList<Expression>();
-        for (EExpression expressionXMI : expressionsXMI) {
+        for (sql.Expression expressionXMI : expressionsXMI) {
             Expression expression = transformExpression(expressionXMI);
             expressions.add(expression);
         }
@@ -330,7 +294,7 @@ public class J2XMI {
     }
 
     private static IsNullExpression transformIsNullExpression(
-        EIsNullExpression isNullExpressionXMI) {
+    		sql.IsNullExpression isNullExpressionXMI) {
         if (isNullExpressionXMI == null)
             return null;
         IsNullExpression isNullExpression = new IsNullExpression();
@@ -340,13 +304,13 @@ public class J2XMI {
         return isNullExpression;
     }
 
-    private static NullValue transformNullValue(ENullValue nullValueXMI) {
+    private static NullValue transformNullValue(sql.NullValue nullValueXMI) {
         if (nullValueXMI == null)
             return null;
         return new NullValue();
     }
 
-    private static SubSelect transformSubSelect(ESubSelect subSelectXMI) {
+    private static SubSelect transformSubSelect(sql.SubSelect subSelectXMI) {
         if (subSelectXMI == null)
             return null;
         SubSelect subSelect = new SubSelect();
@@ -357,28 +321,28 @@ public class J2XMI {
     }
 
     private static ComparisonOperator transformComparisonOperator(
-        EComparisonOperator comparisonOperatorXMI) {
+    		sql.ComparisonOperator comparisonOperatorXMI) {
         if (comparisonOperatorXMI == null)
             return null;
-        if (comparisonOperatorXMI instanceof EEqualsTo) {
-            return transformEqualsTo((EEqualsTo) comparisonOperatorXMI);
-        } else if (comparisonOperatorXMI instanceof EGreaterThan) {
-            return transformGreaterThan((EGreaterThan) comparisonOperatorXMI);
-        } else if (comparisonOperatorXMI instanceof EGreaterThanEquals) {
+        if (comparisonOperatorXMI instanceof sql.EqualsTo) {
+            return transformEqualsTo((sql.EqualsTo) comparisonOperatorXMI);
+        } else if (comparisonOperatorXMI instanceof sql.GreaterThan) {
+            return transformGreaterThan((sql.GreaterThan) comparisonOperatorXMI);
+        } else if (comparisonOperatorXMI instanceof sql.GreaterThanEquals) {
             return transformGreateThanEquals(
-                (EGreaterThanEquals) comparisonOperatorXMI);
-        } else if (comparisonOperatorXMI instanceof EMinorThan) {
-            return transformMinorThan((EMinorThan) comparisonOperatorXMI);
-        } else if (comparisonOperatorXMI instanceof EMinorThanEquals) {
+                (sql.GreaterThanEquals) comparisonOperatorXMI);
+        } else if (comparisonOperatorXMI instanceof sql.MinorThan) {
+            return transformMinorThan((sql.MinorThan) comparisonOperatorXMI);
+        } else if (comparisonOperatorXMI instanceof sql.MinorThanEquals) {
             return transformMinorThanEquals(
-                (EMinorThanEquals) comparisonOperatorXMI);
+                (sql.MinorThanEquals) comparisonOperatorXMI);
         } else {
-            return transformNotEqualsTo((ENotEqualsTo) comparisonOperatorXMI);
+            return transformNotEqualsTo((sql.NotEqualsTo) comparisonOperatorXMI);
         }
     }
 
     private static NotEqualsTo transformNotEqualsTo(
-        ENotEqualsTo notEqualsToXMI) {
+    		sql.NotEqualsTo notEqualsToXMI) {
         if (notEqualsToXMI == null)
             return null;
         NotEqualsTo notEqualsTo = new NotEqualsTo();
@@ -390,7 +354,7 @@ public class J2XMI {
     }
 
     private static MinorThanEquals transformMinorThanEquals(
-        EMinorThanEquals minorThanEqualsXMI) {
+    		sql.MinorThanEquals minorThanEqualsXMI) {
         if (minorThanEqualsXMI == null)
             return null;
         MinorThanEquals minorThanEquals = new MinorThanEquals();
@@ -401,7 +365,7 @@ public class J2XMI {
         return minorThanEquals;
     }
 
-    private static MinorThan transformMinorThan(EMinorThan minorThanXMI) {
+    private static MinorThan transformMinorThan(sql.MinorThan minorThanXMI) {
         if (minorThanXMI == null)
             return null;
         MinorThan minorThan = new MinorThan();
@@ -413,7 +377,7 @@ public class J2XMI {
     }
 
     private static GreaterThanEquals transformGreateThanEquals(
-        EGreaterThanEquals greaterThanEqualsXMI) {
+    		sql.GreaterThanEquals greaterThanEqualsXMI) {
         if (greaterThanEqualsXMI == null)
             return null;
         GreaterThanEquals greaterThanEquals = new GreaterThanEquals();
@@ -425,7 +389,7 @@ public class J2XMI {
     }
 
     private static GreaterThan transformGreaterThan(
-        EGreaterThan greaterThanXMI) {
+    		sql.GreaterThan greaterThanXMI) {
         if (greaterThanXMI == null)
             return null;
         GreaterThan greaterThan = new GreaterThan();
@@ -436,7 +400,7 @@ public class J2XMI {
         return greaterThan;
     }
 
-    private static EqualsTo transformEqualsTo(EEqualsTo equalsToXMI) {
+    private static EqualsTo transformEqualsTo(sql.EqualsTo equalsToXMI) {
         if (equalsToXMI == null)
             return null;
         EqualsTo equalsTo = new EqualsTo();
@@ -448,21 +412,21 @@ public class J2XMI {
     }
 
     private static BinaryExpression transformBinaryExpression(
-        EBinaryExpression binaryExpressionXMI) {
+    		sql.BinaryExpression binaryExpressionXMI) {
         if (binaryExpressionXMI == null)
             return null;
-        if (binaryExpressionXMI instanceof EAndExpression) {
-            return transformAndExpression((EAndExpression) binaryExpressionXMI);
-        } else if (binaryExpressionXMI instanceof EComparisonOperator) {
+        if (binaryExpressionXMI instanceof sql.AndExpression) {
+            return transformAndExpression((sql.AndExpression) binaryExpressionXMI);
+        } else if (binaryExpressionXMI instanceof sql.ComparisonOperator) {
             return transformComparisonOperator(
-                (EComparisonOperator) binaryExpressionXMI);
+                (sql.ComparisonOperator) binaryExpressionXMI);
         } else {
-            return transformOrExpression((EOrExpression) binaryExpressionXMI);
+            return transformOrExpression((sql.OrExpression) binaryExpressionXMI);
         }
     }
 
     private static OrExpression transformOrExpression(
-        EOrExpression orExpressionXMI) {
+    		sql.OrExpression orExpressionXMI) {
         if (orExpressionXMI == null)
             return null;
         OrExpression orExpression = new OrExpression(null, null);
@@ -474,7 +438,7 @@ public class J2XMI {
     }
 
     private static AndExpression transformAndExpression(
-        EAndExpression andExpressionXMI) {
+    		sql.AndExpression andExpressionXMI) {
         if (andExpressionXMI == null)
             return null;
         AndExpression andExpression = new AndExpression(null, null);
@@ -486,28 +450,28 @@ public class J2XMI {
     }
 
     private static StringValue transformStringValue(
-        EStringValue stringValueXMI) {
+    		sql.StringValue stringValueXMI) {
         if (stringValueXMI == null)
             return null;
         StringValue stringValue = new StringValue(stringValueXMI.getValue());
         return stringValue;
     }
 
-    private static LongValue transformLongValue(ELongValue longValueXMI) {
+    private static LongValue transformLongValue(sql.LongValue longValueXMI) {
         if (longValueXMI == null)
             return null;
         LongValue longValue = new LongValue(longValueXMI.getValue());
         return longValue;
     }
 
-    private static Alias transformAlias(EAlias aliasXMI) {
+    private static Alias transformAlias(sql.Alias aliasXMI) {
         if (aliasXMI == null)
             return null;
         Alias alias = new Alias(aliasXMI.getName());
         return alias;
     }
 
-    private static Distinct transformDistinct(EDistinct distinctXMI) {
+    private static Distinct transformDistinct(sql.Distinct distinctXMI) {
         if (distinctXMI == null)
             return null;
         Distinct distinct = new Distinct();
